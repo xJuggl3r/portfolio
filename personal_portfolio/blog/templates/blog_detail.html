@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% load markdown_extras %}
+{% block page_content %}
+<div class="col-md-8 offset-md-2">
+    {% comment %} insert header_image {% endcomment %}
+    {% if post.header_image %}
+    <img src="{{ post.header_image.url }}" alt="header_image" width="100%" height="auto">
+    {% endif %}
+
+    {% comment %} insert header_image according to post pk here {% endcomment %}
+    {% comment %} <img src="/{{MEDIA_URL}}/posts/{{ post.pk }}/header_image.png" alt="header_image" width="100%" height="auto"> {% endcomment %}
+    <h1>{{ post.title }}</h1>
+    <small>
+        {{ post.created_on.date }} |&nbsp;
+        Categories:&nbsp;
+        {% for category in post.categories.all %}
+        <a href="{% url 'blog_category' category.name %}">
+            {{ category.name }}
+        </a>&nbsp;
+        {% endfor %}
+    </small>
+    <p>{{ post.body | linebreaks }}</p>
+    <h3>Leave a comment:</h3>
+    <form action="/blog/{{ post.pk }}/" method="post">
+        {% csrf_token %}
+        <div class="form-group">
+            {{ form.author }}
+        </div>
+        <div class="form-group">
+            {{ form.body }}
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+    <h3>Comments:</h3>
+    {% for comment in comments %}
+    <p>
+        On {{comment.created_on.date }}&nbsp;
+        <b>{{ comment.author }}</b> wrote:
+    </p>
+    <p>{{ comment.body }}</p>
+    <hr>
+    {% endfor %}
+</div>
+{% endblock %}
